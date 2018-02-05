@@ -40,5 +40,5 @@ if (typeof n == 'number' && n > 9 && n < 100){
 console.log (z);
 
 }
-else console.log ('Error');
+else console.log ('Errorrrr');
 
