@@ -1,0 +1,4 @@
+1. Zasto (a == b == c) ima vrednost FALSE iako sve tri promenljive imaju istu vrednost?
+	Razlaganje: (4 == 4 == 4) -> (true == 4) -> (false); true se evaluira kao 1, pa stoga 1 != 4
+
+2.
