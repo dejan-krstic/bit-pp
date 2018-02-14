@@ -21,4 +21,4 @@ function smile(n, lineWidth) {
     }
     return (l);
 }
-console.log(smile(49));
+console.log(smile(48,66));

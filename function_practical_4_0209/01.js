@@ -1,7 +1,9 @@
+'use strict'
 function arrayCon(a, b) {
-    i = 0;
-    j = 0;
-    c = [];
+    var i = 0;
+    var j = 0;
+    var c = [];
+    var k;
     for (k = 0; k < a.length + b.length; k++) {
 
         if (i < a.length && j < b.length) {
