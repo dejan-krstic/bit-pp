@@ -7,7 +7,7 @@ var breakfast = {
          return console.log;
     },
     JSCompliant : function (a) {
-        if (breakfast.energy >= 500) return a(true + ' = ' + breakfast.instructions);
+        if (breakfast.energy >= 600) return a()(breakfast.instructions);
         else return false;
     },
 }
