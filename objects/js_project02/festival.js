@@ -33,7 +33,6 @@
                     counter++;
                 }
             });
-            console.log(counter, this.totalLength() + movie.length);
             if (this.totalLength() + movie.length <= 480 && counter < 4) {
                 this.list.push(movie);
                 this.movieCount++;
@@ -68,12 +67,11 @@
         this.totalMovieCount = function () {
             var n = 0;
             this.listOfPrograms.forEach(function (program, i) {
-                n += program.list.length;
+                n += program.movieCount;
             });
             return n;
         }
         this.addProgram = function (program) {
-            console.log('movie count:', program.movieCount, ' max: ', this.maxNumberOfMovies);
             if ((this.totalMovieCount() + program.movieCount) <= this.maxNumberOfMovies) {
                 this.listOfPrograms.push(program);
             } else {
@@ -152,41 +150,5 @@
 
     console.log(winterFest.getData());
     console.log(weekendFest.getData());
-
-
-
-
-
-
-
-    /* console.log(superman.getData(), thor.getData(), fockers.getData(), silenceLambs.getData(), lotr1.getData()); */
-
-    /*  //programs
-     var winter1 = new Program ('23-02-2018');
-     winter1.addMovie(superman);
-     winter1.addMovie(thor);
- 
-     var winter2 = new Program ('24-02-2018');
-     winter2.addMovie(lotr1);
-     winter2.addMovie(lotr2);
-     winter2.addMovie(lotr3);
- 
-     var winter3 = new Program ('25-02-2018');
-     winter3.addMovie(fockers);
-     winter3.addMovie(daddyDaycare);
- 
-     console.log(winter1.getData());
- 
-     //festivals
-     var winterFest = new Festival('Winter Fest');
-     winterFest.addProgram(winter1);
-     winterFest.addProgram(winter2);
-     winterFest.addProgram(winter3);
- 
-     //testing
-     console.log(winterFest.getData()); */
-
-
-
 
 })();
