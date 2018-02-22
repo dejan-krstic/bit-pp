@@ -7,7 +7,7 @@
     //object Product
 
     function Product(name, price, bestBefore) {
-        var d = bestBefore.split('-')
+        var d = bestBefore.split('-');
         this.id = (function () {
             return 10000 + Math.floor(Math.random() * 90000);
         })();
