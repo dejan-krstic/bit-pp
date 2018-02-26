@@ -66,31 +66,24 @@
         }
 
         Flight.prototype.getData = function () {
+            var consonants = function (a) {
+                var a1, a2, m=true;
+                for (var i=0; i<a.length; i++){
+                    if (('aeiouAEIOU ').indexOf(a[i]) == -1) {
+                        if (m) {
+                            a1=a[i];
+                            m = false;
+                        }
+                        a2=a[i];
+                            
+                    }
+                }
+                return (a1+a2).toUpperCase();
+            }
             var rel = this.relation.toUpperCase().split(' - ');
-            var rel01, rel02, rel11, rel12;
-            
-
-            for (var i=0; i<rel[0].length; i++){
-                if (('aeiouAEIOU ').indexOf(rel[0][i]) == -1) {
-                    rel02=rel[0][i];
-                }
-            }
-            for (var i=rel[0].length-1; i>=0; i--){
-                if (('aeiouAEIOU ').indexOf(rel[0][i]) == -1) {
-                    rel01=rel[0][i];
-                }
-            }
-            for (var i=0; i<rel[1].length; i++){
-                if (('aeiouAEIOU ').indexOf(rel[1][i]) == -1) {
-                    rel12=rel[1][i];
-                }
-            }
-            for (var i=rel[1].length-1; i>=0; i--){
-                if (('aeiouAEIOU ').indexOf(rel[1][i]) == -1) {
-                    rel11=rel[1][i];
-                }
-            }
-            var s = this.date.getDate() + '.' + this.date.getMonth() + '.' + this.date.getFullYear() + ', ' + rel01 + rel02 + ' - ' + rel11 + rel12 + ', business passengers: ' + this.businessPassengers();
+            var rel0 = consonants(rel[0]);
+            var rel1 = consonants(rel[1]);
+            var s = this.date.getDate() + '.' + this.date.getMonth() + '.' + this.date.getFullYear() + ', ' + rel0 + ' - ' + rel1 + ', business passengers: ' + this.businessPassengers();
             this.passengerList.forEach(function (passeng) {
                 s += '\n\t\t\t\t' + passeng.getData();
             });
