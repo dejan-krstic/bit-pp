@@ -7,9 +7,9 @@
     //constructor function genre  
     function Genre(name) {
         this.name = name;
-        this.getData = function () {
-            return (this.name.substring(0, 1) + this.name.substring(this.name.length - 1)).toUpperCase();
-        }
+    }
+    Genre.prototype.getData = function () {
+        return (this.name.substring(0, 1) + this.name.substring(this.name.length - 1)).toUpperCase();
     }
 
     //constructor function movie 
@@ -17,78 +17,79 @@
         this.title = title;
         this.genre = genre;
         this.length = parseInt(length); // must be number
-        this.getData = function () {
-            return this.title + ", " + this.length + "min, " + this.genre.getData();
-        }
+    }
+    Movie.prototype.getData = function () {
+        return this.title + ", " + this.length + "min, " + this.genre.getData();
     }
     // constructor function Program
     function Program(date) {
         this.list = [];
         this.date = new Date(date);
         this.movieCount = 0;
-        this.addMovie = function (movie) {
-            var counter = 0;
-            this.list.forEach(function (item) {
-                if (item.genre == movie.genre) {
-                    counter++;
-                }
-            });
-            if (this.totalLength() + movie.length <= 480 && counter < 4) {
-                this.list.push(movie);
-                this.movieCount++;
-            } else if (this.totalLength() + movie.length > 480) {
-                console.log('Available screen time exceeded!');
-            } else {
-                console.log('There are already 4 movies of this genre in this program!');
+    };
+    Program.prototype.addMovie = function (movie) {
+        var counter = 0;
+        this.list.forEach(function (item) {
+            if (item.genre == movie.genre) {
+                counter++;
             }
-        };
-        this.totalLength = function () {
-            var k = 0;
-            this.list.forEach(function (movie, i) {
-                k += movie.length;
-
-            });
-            return k;
+        });
+        if (this.totalLength() + movie.length <= 480 && counter < 4) {
+            this.list.push(movie);
+            this.movieCount++;
+        } else if (this.totalLength() + movie.length > 480) {
+            console.log('Available screen time exceeded!');
+        } else {
+            console.log('There are already 4 movies of this genre in this program!');
         }
+    };
+    Program.prototype.totalLength = function () {
+        var k = 0;
+        this.list.forEach(function (movie, i) {
+            k += movie.length;
 
-        this.getData = function () {
-            var s = '\t' + this.date.getDate() + ' ' + (this.date.getMonth() + 1) + ' ' + this.date.getFullYear() + ', program duration ' + this.totalLength() + 'min';
-            this.list.forEach(function (movie, i) {
-                s += '\n\t\t' + movie.getData();
-            });
-            return s;
-        }
+        });
+        return k;
+    };
+
+    Program.prototype.getData = function () {
+        var s = '\t' + this.date.getDate() + ' ' + (this.date.getMonth() + 1) + ' ' + this.date.getFullYear() + ', program duration ' + this.totalLength() + 'min';
+        this.list.forEach(function (movie, i) {
+            s += '\n\t\t' + movie.getData();
+        });
+        return s;
     }
+
     //constructor function Festival
     function Festival(name, max) {
         this.name = name;
         this.maxNumberOfMovies = parseInt(max);
         this.listOfPrograms = [];
-        this.totalMovieCount = function () {
-            var n = 0;
+    }
+    Festival.prototype.totalMovieCount = function () {
+        var n = 0;
+        this.listOfPrograms.forEach(function (program, i) {
+            n += program.movieCount;
+        });
+        return n;
+    }
+    Festival.prototype.addProgram = function (program) {
+        if ((this.totalMovieCount() + program.movieCount) <= this.maxNumberOfMovies) {
+            this.listOfPrograms.push(program);
+        } else {
+            console.log('Maximum number of allowed movies exceeded!');
+        }
+    }
+    Festival.prototype.getData = function () {
+        if (this.listOfPrograms.length != 0) {
+            var s = this.name + ' has ' + this.totalMovieCount() + ' movie titles';
             this.listOfPrograms.forEach(function (program, i) {
-                n += program.movieCount;
+                s += '\n' + program.getData();
             });
-            return n;
+        } else {
+            var s = this.name + '\n\tProgram to be announced';
         }
-        this.addProgram = function (program) {
-            if ((this.totalMovieCount() + program.movieCount) <= this.maxNumberOfMovies) {
-                this.listOfPrograms.push(program);
-            } else {
-                console.log('Maximum number of allowed movies exceeded!');
-            }
-        }
-        this.getData = function () {
-            if (this.listOfPrograms.length != 0) {
-                var s = this.name + ' has ' + this.totalMovieCount() + ' movie titles';
-                this.listOfPrograms.forEach(function (program, i) {
-                    s += '\n' + program.getData();
-                });
-            } else {
-                var s = this.name + '\n\tProgram to be announced';
-            }
-            return s;
-        }
+        return s;
     }
 
     //genres
