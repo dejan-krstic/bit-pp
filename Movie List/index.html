@@ -28,7 +28,7 @@
                 <option value="comedy">Comedy</option>
                 <option value="adventure">Adventure</option>
             </select>
-            <p id="error">error message</p>
+            <p id="error1">error message</p>
             <input type="button" value="Add Movie" id="add">
             <ul id="movieList"></ul>
         </div>
@@ -36,15 +36,26 @@
             <span id="counter">-</span>
         </p> -->
 
-
+        <p>Program</p>
         <div class="program">
             <label> Date <br>
             <input type="date" name="date" id="date"> </label>
-      
+            <p id="error2">error message</p>
+            
             <input type="button" value="Create program" id="addprogram">
             <ul id="movieProgram"></ul>
-            <select name="movies" id="movies"></select>
-            <select name="programs" id="programs"></select>
+            <label for="">Choose movie
+                <select name="movies" id="movies">
+                <option value="-">-</option>
+            </select>
+        </label>
+            <label for="">Choose program
+                    <select name="programs" id="programs">
+                            <option value="-">-</option>
+            
+                        </select>
+            </label>
+            <p id="error3">Select movie and/or program!</p>
             <input type="button" value="Add movie to program" id="addmtop">
         </div>
     </div>
