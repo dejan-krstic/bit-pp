@@ -4,15 +4,6 @@ var dataModule = (function(){
         this.listOfStudents = [];
         this.name = name;
     }
-    function Student(name, surname) {
-        this.name = name;
-        this.surname = surname;
-    }
-    function Exam(subject, student, grade) {
-        this.subject = subject;
-        this.student = student;
-        this.grade = grade;
-    }
 
     Subject.prototype.getSubjectName = function() {
         return this.name;
@@ -21,26 +12,45 @@ var dataModule = (function(){
     Subject.prototype.tookExam = function(student) {
         var checker = false;
         this.listOfStudents.forEach(function(person){
-            if (student.getStudentInfo() == person.getStudentInfo()) {
+            if (student.getStudentData() == person.getStudentData()) {
                 checker = true;
-                return;
+                return false;
             }
         })
         return checker;
+    }
+    var subjectWeb = new Subject('web');
+    var subjectJS = new Subject('js');
+    var subjectSPA = new Subject('spa');
+
+    var subjects = {
+         subjectWeb: subjectWeb,
+         subjectJS: subjectJS,
+         subjectSPA: subjectSPA
+
     }
 
     Subject.prototype.addToSelect = function() {
         // TODO adds created subject to select dropDown
     }
+
+    function Student(name, surname) {
+        this.name = name;
+        this.surname = surname;
+    }
+
     Student.prototype.getStudentData = function() {
         return this.name + ' ' + this.surname;
     }
 
+    function Exam(subject, student, grade) {
+        this.subject = subject;
+        this.student = student;
+        this.grade = grade;
+    }
+
     Exam.prototype.getExamInfo = function() {
-        return {
-            subject : subject.getSubjectName,
-            student : student.getStudentInfo
-        }
+        return this.subject.getSubjectName() + ', ' + this.student.getStudentData() + ', ' + this.grade;
     }
 
     Exam.prototype.hasPassed = function() {
@@ -63,12 +73,13 @@ var dataModule = (function(){
         var s = new Exam(subject, student, grade);
         return s;
     }
+    
 
     return {
         createSubject : createSubject,
         createStudent : createStudent,
         createExam : createExam,
-
+        subjects: subjects
     }
 
 })();

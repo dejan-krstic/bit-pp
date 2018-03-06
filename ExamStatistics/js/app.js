@@ -1,26 +1,84 @@
-var appModule = (function (UIModule, dataModule) {
-    function addButtonListener () {
-        document.querySelector(UIModule.UISelectors.addButton).addEventListener('click', function() {
-            var data = UIModule.getFormData;
+var passedCounter = 0;
+var failedCounter = 0;
+
+var appModule = (function () {
+    function addButtonListener() {
+        document.querySelector(UIModule.UISelectors.addButton).addEventListener('click', function () {
+            var data = UIModule.getFormData();
             var validationMessage = UIModule.validation(data);
+
             if (validationMessage != "OK") {
-                setError(validationMessage);
+                UIModule.setError(validationMessage);
                 return;
             }
+            
             var student = dataModule.createStudent(data.name, data.surname);
-            if (!data.subject.tookExam(student)) {
-                var exam = dataModule.createExam(data.subject, student, data.grade);
-                dataModule.updateStatistics(exam);
+            //var subjectX = dataModule.createSubject(data.subject);
+
+
+            if (!dataModule.subjects.subjectJS.tookExam(student) && data.subject == 'js') {
+                var exam = dataModule.createExam(dataModule.subjects.subjectJS, student, data.grade);
+                dataModule.subjects.subjectJS.listOfStudents.push(student);
+                console.log(dataModule.subjects.subjectJS.listOfStudents);
+
+                updateStatistics(exam);
+            }
+            if (!dataModule.subjects.subjectWeb.tookExam(student) && data.subject == 'web') {
+                var exam = dataModule.createExam(dataModule.subjects.subjectWeb, student, data.grade);
+                dataModule.subjects.subjectWeb.listOfStudents.push(student);
+                console.log(dataModule.subjects.subjectWeb.listOfStudents);
+
+                updateStatistics(exam);
+            }
+            if (!dataModule.subjects.subjectSPA.tookExam(student) && data.subject == 'spa') {
+                var exam = dataModule.createExam(dataModule.subjects.subjectSPA, student, data.grade);
+                dataModule.subjects.subjectSPA.listOfStudents.push(student);
+                console.log(dataModule.subjects.subjectSPA.listOfStudents);
+
+                updateStatistics(exam);
             }
 
+            function updateStatistics(exam) {
+                var passed = document.querySelector('.passed-ul');
+                var failed = document.querySelector('.failed-ul');
+                var passedCount = document.querySelector('.exam-passed-count');
+                var failedCount = document.querySelector('.exam-failed-count');
+                var failedPercent = document.querySelector('.exam-failed-percentage');
+
+                var percentage = '100%';
+
+                var studentLi = document.createElement('li');
+                var studentText = document.createTextNode(exam.getExamInfo());
+                studentLi.appendChild(studentText);
+
+                if (exam.hasPassed()) {
+                    passed.appendChild(studentLi);
+                    passedCounter++;
+                    passedCount.textContent = passedCounter;
+
+                }
+                if (!exam.hasPassed()) {
+                    failed.appendChild(studentLi);
+                    failedCounter++;
+                    failedCount.textContent = failedCounter;
+                }
+                percentage = parseInt(100 * failedCounter / (passedCounter + failedCounter)) + '%';
+                failedPercent.textContent = percentage;
+
+            }
 
         });
-        function updateStatistics(exam) {
-            // TODO some magic to update counters and lists on page
-        }
+
 
 
     }
 
-
+    return {
+        init: function () {
+            console.log('God save us!');
+            addButtonListener();
+        }
+    }
 })(UIModule, dataModule);
+
+appModule.init();
