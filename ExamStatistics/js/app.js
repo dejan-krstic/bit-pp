@@ -1,7 +1,6 @@
-var passedCounter = 0;
-var failedCounter = 0;
-
 var appModule = (function () {
+    var passedCounter = 0;
+    var failedCounter = 0;
     function addButtonListener() {
         document.querySelector(UIModule.UISelectors.addButton).addEventListener('click', function () {
             var data = UIModule.getFormData();
@@ -37,8 +36,8 @@ var appModule = (function () {
 
                 updateStatistics(exam);
             }
-
-            function updateStatistics(exam) {
+            
+            function updateStatistics2(exam) {
                 var passed = document.querySelector('.passed-ul');
                 var failed = document.querySelector('.failed-ul');
                 var passedCount = document.querySelector('.exam-passed-count');
@@ -59,6 +58,32 @@ var appModule = (function () {
                 }
                 if (!exam.hasPassed()) {
                     failed.appendChild(studentLi);
+                    failedCounter++;
+                    failedCount.textContent = failedCounter;
+                }
+                percentage = parseInt(100 * failedCounter / (passedCounter + failedCounter)) + '%';
+                failedPercent.textContent = percentage;
+
+            }
+            function updateStatistics(exam) {
+                var percentage = '100%';
+                var passed = document.querySelector('.passed-list');
+                var failed = document.querySelector('.failed-list');
+                var passedCount = document.querySelector('.exam-passed-count');
+                var failedCount = document.querySelector('.exam-failed-count');
+                var failedPercent = document.querySelector('.exam-failed-percentage');
+
+
+                
+                if (exam.hasPassed()) {
+                    passed.innerHTML += '<div class="item clearfix" id="failed-0"><div class="item-description">'+exam.student.getStudentData()+', '+exam.subject.name+'</div> <div class="right clearfix"><div class="item-value">'+exam.grade+'</div><div class="item-delete"> <button class="item-delete-btn">x</i></button></div></div></div>';
+                    
+                    passedCounter++;
+                    passedCount.textContent = passedCounter;
+
+                }
+                if (!exam.hasPassed()) {
+                    failed.innerHTML += '<div class="item clearfix" id="failed-0"><div class="item-description">'+exam.student.getStudentData()+', '+exam.subject.name+'</div> <div class="right clearfix"><div class="item-value">'+exam.grade+'</div><div class="item-delete"> <button class="item-delete-btn">x</i></button></div></div></div>';
                     failedCounter++;
                     failedCount.textContent = failedCounter;
                 }
