@@ -1,0 +1,17 @@
+.container-fluid {
+    nav {
+        .navbar-brand{
+            color: whitesmoke;
+        }
+    }
+    .row {
+        max-width: 960px;
+        margin: 0 auto;
+        div {
+            padding-top: 20px;
+            .card {
+                padding: 0;
+            }
+        }
+    }
+}
