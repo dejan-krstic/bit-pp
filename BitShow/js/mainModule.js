@@ -7,7 +7,7 @@ let mainModule = ((UIModule, dataModule) => {
 
     topShows.done(() => {
         data = JSON.parse(topShows.responseText);
-        console.log(data);
+
 
         let allShows = dataModule.createShows(limit);
         $('.dropdown-toggle')[0].addEventListener('click', (e) => {
@@ -23,7 +23,7 @@ let mainModule = ((UIModule, dataModule) => {
         }
 
         let cardGroup = $(UIModule.UISelectors.cardGroup);
-        console.log(cardGroup);
+
 
         allShows.showList.forEach((item, i) => {
             let card = $('<div class="col-4"></div>');
@@ -32,33 +32,84 @@ let mainModule = ((UIModule, dataModule) => {
         })
 
     });
-    let searchInterval;
-    let liveSearch = () => {
-    }
-    let checkSearch = $('.dropdown-toggle');
-    checkSearch.addEventListener('focus', () => {
-        if (checkSearch.value) {
 
-            searchInterval = setInterval(liveSearch, 1000);
-        } else {
-            clearInterval(searchInterval);
-        }
+
+// --------------------------------------------------------------
+
+    let searchInterval;
+    let checkSearch = $('.dropdown-toggle');
+    let ulDropdown = $('.dropdown-menu');
+    let marker = '';
+    let liveSearch = () => {
+        let data = [];
+        
+        let liveDropdown = $.get(`http://api.tvmaze.com/search/shows?q=${checkSearch.val()}`);  
+        
+        liveDropdown.done(() => {
+            if (liveDropdown.responseText == marker) {
+                return;
+            }
+            marker = liveDropdown.responseText;
+            console.log(1);
+            data = JSON.parse(liveDropdown.responseText);
+            let dropdownShows = dataModule.createShows(10);
+
+            for (let i = 0; i < data.length && i<10; i++) {
+                if (data[i].show.image == null) {
+                    var image = 'http://en.docsity.com/wordpress/wp-content/uploads/sites/2/2014/02/programmers-be-like.jpg';
+                } else {
+                    image = data[i].show.image.medium;
+                }
+                
+                let show = dataModule.createSingleShow(data[i].show.name , image, data[i].show.id, data[i].show.summary);
+                dropdownShows.addShow(show);
+            }
+            ulDropdown.empty();
+            dropdownShows.showList.forEach((item) => {
+                let li = $(`<li role="presentation"> <a role="menuitem" tabindex="-1" href="./single/single.html">${item.title}</a></li>`);
+                ulDropdown.append(li);
+            })
+         
+        })    
+    }
+    checkSearch[0].addEventListener('focus', () => {
+        console.log(checkSearch.val());
+        searchInterval = setInterval(liveSearch, 1000);
+        
+        // let startSearch = () => {
+        //     if (checkSearch.val()) {
+        //         liveSearch();
+        //     } else {
+        //         clearInterval(searchInterval);
+        //     }    
+        // }
+        // searchInterval = setInterval(startSearch, 1000);
+        
+        
+        // if (checkSearch.val()) {
+        //     searchInterval = setInterval(liveSearch, 1000);
+            
+        // } else {
+        //     clearInterval(searchInterval);
+        // }
 
     })
 
-    checkSearch.addEventListener('blur', () => {
+
+    checkSearch[0].addEventListener('blur', () => {
         clearInterval(searchInterval);
-    }
+    })
 
-    
 
-    
+//--------------------------------------------------------------------------------------------------------------
+
 
     let getData = () => {
         return data;
     }
 
     return {
-        getData: getData
+        getData: getData,
+        checkSearch: checkSearch
     }
 })(UIModule, dataModule)
