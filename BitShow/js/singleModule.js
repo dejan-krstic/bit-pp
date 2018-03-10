@@ -1,21 +1,37 @@
-let singleModule = ((UIModule, dataModule, mainModule) => {
+let singleModule = ((UIModule, dataModule) => {
 
     console.log('success!')
 
     let container = $('.container-fluid')[0];
 
     let seasonReq = $.get(`${localStorage.seasonsRequest}`);
-    let showObject = JSON.parse(localStorages.showObj);
-    let sample = dataModule.createSingleShow('a', 'a', 'a');
+    let parsedObject = JSON.parse(localStorage.showObj);
+    console.log(parsedObject.image);
+    let showObject = dataModule.createSingleShow(parsedObject.title, parsedObject.image, parsedObject.id, parsedObject.details);
 
     let data;
 
     seasonReq.done(() => {
-        data = JSON.parse(season.responseText);
-        sample.addSeason.call(data, )
+        data = JSON.parse(seasonReq.responseText);
+        data._embedded.seasons.forEach(season => {
+            let s = dataModule.createSeason(season.premiereDate, season.endDate);
+            showObject.seasons.push(s);
+            
+        });
+        data._embedded.cast.forEach(cast => {
+            let c = dataModule.createCast(cast.person.name);
+            showObject.cast.push(c);
+        })
+
+        console.log(showObject);
+
+        UIModule.createSingleInfo(showObject);
+
+
+
 
 
 
     })
 
-})(UIModule, dataModule, mainModule);
+})(UIModule, dataModule);
