@@ -1,6 +1,6 @@
 .container-fluid {
     nav {
-        .navbar-brand{
+        .navbar-brand {
             color: whitesmoke;
         }
     }
@@ -11,6 +11,9 @@
             padding-top: 20px;
             .card {
                 padding: 0;
+                &:hover {
+                    cursor: pointer;
+                }
             }
         }
     }
