@@ -11,13 +11,11 @@ const UIModule = (() => {
         seasons : '.seasons',
         cast : '.cast',
         crew : '.crew',
-        ep1 : '.ep1',
-        ep2 : '.ep2',
-        ep3 : '.ep3'
+        ep : ['.ep1', '.ep2', '.ep3']
     }
 
     const status = {
-        ERROR: 'Please refresh yuor page!'
+        ERROR: 'Please refresh your page!'
     }
     
     const createCard = (name, image, id) => $(`
@@ -127,15 +125,11 @@ const UIModule = (() => {
         cast.append(ulDone(obj.cast));
         const crew = $(UISelectors.crew);
         crew.append(ulDone(obj.crew));
-        let arr1 = obj.episodes.slice(0, Math.floor(obj.episodes.length/3));
-        const ep1 = $(UISelectors.ep1);
-        ep1.append(ulDone(arr1))
-        let arr2 = obj.episodes.slice(Math.floor(obj.episodes.length/3), Math.floor(2*obj.episodes.length/3));
-        const ep2 = $(UISelectors.ep2);
-        ep2.append(ulDone(arr2))
-        let arr3 = obj.episodes.slice(Math.floor(2*obj.episodes.length/3));
-        const ep3 = $(UISelectors.ep3);
-        ep3.append(ulDone(arr3));
+        for (let i = 0; i < 3; i++ ){
+            let arr = obj.episodes.slice(Math.floor(i*obj.episodes.length/3), Math.floor((i+1)*obj.episodes.length/3));
+            let ep = $(UISelectors.ep[i]);
+            ep.append(ulDone(arr))
+        }
     }
 
 

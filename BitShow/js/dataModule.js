@@ -153,7 +153,7 @@ const dataModule = (() => {
         if (showResponse._embedded.akas == null) return;     
         let countryName = '';   
         showResponse._embedded.akas.forEach(aka =>{
-            if (showResponse._embedded.akas.country == null) {
+            if (!aka.country ) {
                 countryName = '';
             } else {
                 countryName = aka.country.name;
@@ -162,12 +162,7 @@ const dataModule = (() => {
         })
     }
     
-    const showEpisodes = (showResponse, singleShowObj) => {
-        showResponse._embedded.episodes.forEach(episode => {
-            singleShowObj.episodes.push(createEpisode(episode.name, episode.season, episode.number));
-        })
-    }
-
+    
     const adaptSingleResponse = (showResponse) => {
         var singleShowObj = createSingleShow(showResponse.name,showResponse.image.medium, showResponse.id, showResponse.summary);
         showSeasons(showResponse, singleShowObj);
@@ -175,10 +170,15 @@ const dataModule = (() => {
         showCrew(showResponse, 10, singleShowObj);
         showAkas(showResponse, singleShowObj);
         showEpisodes(showResponse, singleShowObj);
-
+        
         return singleShowObj;
     }
- 
+    
+    const showEpisodes = (showResponse, singleShowObj) => {
+        showResponse._embedded.episodes.forEach(episode => {
+            singleShowObj.episodes.push(createEpisode(episode.name, episode.season, episode.number));
+        })
+    }
     return {
         createActor,
         createSeason,
