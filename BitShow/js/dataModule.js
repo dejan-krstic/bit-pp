@@ -1,125 +1,192 @@
 const dataModule = (() => {
 
-    class Shows {
-        
-        constructor(limit) {
-            this.showList = [];
-            this.limit = limit;
-        }
+    class Show {
 
-        addShow(show) {
-            this.showList.push(show);
+        constructor(name, image = 'http://en.docsity.com/wordpress/wp-content/uploads/sites/2/2014/02/programmers-be-like.jpg', showID) {
+            this.name = name;
+            this.image = image;
+            this.id = showID;
+
         }
     }
+    class SingleShow extends Show {
 
-    class SingleShow {
-
-        constructor(title, imgURL, showId, details) {
-            this.title = title;
-            this.image = imgURL;
-            this.id = showId;
+        constructor(name, image, showID, info) {
+            super(name, image, showID)
+            this.info = info;
             this.seasons = [];
             this.cast = [];
-            this.details = details;
+            this.crew = []
+            this.akas = [];
+            this.episodes = [];
         }
-
         addSeason(season) {
             this.seasons.push(season);
         }
-
         addCast(cast) {
             this.cast.push(cast);
         }
-    }
+        addCrew(crew) {
+            this.crew.push(crew);
+        }
+        addAkas(aka) {
+            this.akas.push(aka);
+        }
+        addEpisodes(episodes) {
+            this.episodes.push(episodes);
+        }
+    };
 
     class Season {
-
         constructor(startDate, endDate) {
-            this.start = startDate;
-            this.end = endDate;
+            this.startDate = startDate;
+            this.endDate = endDate;
         }
-
         getInfo() {
-            return `${this.start} - ${this.end}`;
+            return `${this.startDate} - ${this.endDate}`;
         }
     }
 
-    class Cast {
-
+    class Actor {
         constructor(name) {
             this.name = name;
         }
-
         getInfo() {
             return this.name;
         }
     }
 
-    const createShows = (limit) => new Shows(limit);
-    
-    const createSingleShow = (title, imgURL, showId, details) => new SingleShow(title, imgURL, showId, details);
-    
-    const createSeason = (startDate, endDate) => new Season(startDate, endDate);
-    
-    const createCast = (name) => new Cast(name);
-
-    const adaptResponse = (show, size) => {
-        let allShows = createShows(size);
-        show.splice(size);
-        show.forEach(show => {
-            allShows.showList.push(createSingleShow(show.name, show.image.medium, show.id, show.summary))
-        });
-
-        return allShows;
-    }
-
-    const adaptSingleResponse = (response) => {
-        let show = createSingleShow(response.name, response.image.medium, response.id, response.summary);
-        
-        response._embedded.seasons.forEach(season => {
-            show.addSeason(createSeason(season.premiereDate, season.endDate))
-        })
-        
-        response._embedded.cast.forEach(cast => {
-            show.addCast(createCast(cast.person.name));
-        })
-    }
-
-    const clicked = (event) => {
-        let id = event.target.id.substring(1);
-
-        localStorage.setItem('showID', `${id}`);
-        // localStorage.setItem('showObj', `${JSON.stringify(shows.showList[id - 1])}`);
-        location.href = './single.html'
-        // console.log(localStorage.showObj);
-    };
-
-    let interval = {
-        marker : '',
-        set : (liveSearch) => {
-            this.marker = setInterval(liveSearch, 1500);
-        },
-        clear : () => {
-            clearInterval(this.marker);
+    class CrewMember {
+        constructor(name, type) {
+            this.name = name;
+            this.type = type;
+        }
+        getInfo() {
+            return `${this.type}: ${this.name}`;
         }
     }
 
-    const liveSearch = (params) => {
-        for (let i = 0; i < data.length && i < dropDownLimit; i++) {
-            if (data[i].show.image == null) {
-                var image = 'http://en.docsity.com/wordpress/wp-content/uploads/sites/2/2014/02/programmers-be-like.jpg';
+    class Aka {
+        constructor (aka, country) {
+            this.aka = aka;
+            this.country = country; 
+        }
+        getInfo () {
+            if (this.country) {
+                return `${this.aka}, in ${this.country}`;
             } else {
-                image = data[i].show.image.medium;
+                return this.aka;
             }
-
-            let show = dataModule.createSingleShow(data[i].show.name, image, data[i].show.id, data[i].show.summary);
-            dropdownShows.addShow(show);
         }
     }
 
-    return {
-        adaptResponse,
-        adaptSingleResponse,
-        interval
+    class Episode {
+        constructor (name, season, number) {
+            this.name = name;
+            this.season = season;
+            this.number = number;
+        }
+        getInfo (){
+            return `${this.name}, season: ${this.season} number: ${this.number}`;
+        }
     }
-})()
+
+    const createShow = (name, image, showID) => new Show(name, image, showID);
+
+    const createSingleShow = (name, image, showID, info) => new SingleShow(name, image, showID, info);
+
+    const createSeason = (startDate, endDate) => new Season(startDate, endDate);
+
+    const createActor = (name) => new Actor(name);
+
+    const createCrewMember = (name, type) => new CrewMember(name, type);
+
+    const createAka = (name,country) => new Aka(name, country)
+
+    const createEpisode = (name, date, number) => new Episode (name, date, number);
+
+    // ---------------dropDown menu and page creators in single stroke------------------ //
+    const createShowsArray = (showsResponse) => {
+        let showsArray = [];
+        let name, image, id;
+        showsResponse.forEach((show, index) => {
+            if (show.name) {
+                name = show.name;
+                image = show.image.medium;
+                id = show.id;
+            } else {
+                name = show.show.name;
+                image = undefined;
+                id = show.show.id;
+            }
+            showsArray[index] = createShow(name, image, id);
+        });
+        return showsArray;
+    }
+
+    const adaptShowsResponse = (showsResponse, showsOnPage) => {
+        showsResponse.splice(showsOnPage);
+        return createShowsArray(showsResponse);
+    }
+    //-------------------------------- single show obj----------------------- //
+    const fetchID = () => parseInt(location.href.slice(location.href.indexOf('id=')+3));
+
+    const showCrew = (showResponse, maxNumber, singleShowObj) => {
+        showResponse._embedded.crew.splice(maxNumber);
+        showResponse._embedded.crew.forEach(crewMember => {
+            singleShowObj.addCrew(createCrewMember(crewMember.person.name, crewMember.type));  
+        })
+    }
+
+    const showCast = (showResponse, maxNumber, singleShowObj) => {
+        showResponse._embedded.cast.splice(maxNumber);
+        showResponse._embedded.cast.forEach(actor => {
+            singleShowObj.addCast(createActor(actor.person.name));  
+        })
+    }
+    const showSeasons = (showResponse, singleShowObj) => {
+        showResponse._embedded.seasons.forEach(season => {
+            singleShowObj.addSeason(createSeason(season.premiereDate, season.endDate));  
+        })
+    }
+    const showAkas = (showResponse, singleShowObj) => {
+        if (showResponse._embedded.akas == null) return;     
+        let countryName = '';   
+        showResponse._embedded.akas.forEach(aka =>{
+            if (showResponse._embedded.akas.country == null) {
+                countryName = '';
+            } else {
+                countryName = aka.country.name;
+            }   
+            singleShowObj.addAkas(createAka(aka.name, countryName))
+        })
+    }
+    
+    const showEpisodes = (showResponse, singleShowObj) => {
+        showResponse._embedded.episodes.forEach(episode => {
+            singleShowObj.episodes.push(createEpisode(episode.name, episode.season, episode.number));
+        })
+    }
+
+    const adaptSingleResponse = (showResponse) => {
+        var singleShowObj = createSingleShow(showResponse.name,showResponse.image.medium, showResponse.id, showResponse.summary);
+        showSeasons(showResponse, singleShowObj);
+        showCast(showResponse, 10, singleShowObj);
+        showCrew(showResponse, 10, singleShowObj);
+        showAkas(showResponse, singleShowObj);
+        showEpisodes(showResponse, singleShowObj);
+
+        return singleShowObj;
+    }
+ 
+    return {
+        createActor,
+        createSeason,
+        createShow,
+        createSingleShow,
+        adaptShowsResponse,
+        fetchID,
+        adaptSingleResponse
+    }
+
+})();

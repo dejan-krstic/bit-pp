@@ -1,121 +1,149 @@
 const UIModule = (() => {
 
     const UISelectors = {
-        dropDown : ".dropdown-menu",
-        cardGroup : ".row",
-        card : ".card",
-        dropResult : '.drop-result',
-        checkSearch : 'dropdown-toggle'
+        dropDown: '.dropdown-menu',
+        cardGroup: '.row',
+        card: '.card',
+        dropResult: '.drop-result',
+        checkSearch: '#menu1',
+        navbar : '.navbar',
+        akas : '.akas',
+        seasons : '.seasons',
+        cast : '.cast',
+        crew : '.crew',
+        ep1 : '.ep1',
+        ep2 : '.ep2',
+        ep3 : '.ep3'
+    }
+
+    const status = {
+        ERROR: 'Please refresh yuor page!'
     }
     
-    const toggleDropDown = (node, display) => {
-        if (display) {
-            $(node).show();
-        } else {
-            $(node).hide();
-        }
-    }
+    const createCard = (name, image, id) => $(`
+        <a class="col-lg-4 col-md-6" href="./single.html?id=${id}">
+             <div class="card">
+                <img class="card-img-top" src="${image}" alt="Card image cap">
+            <div class="card-body">
+            <p class="card-text">${name}</p>
+            </div>
+          </div>
+        </a> `)
 
-    const toPointer = (event) => {
-        $(event.target).css('cursor', 'pointer');
-    }
-
-    const displayShows = shows => {
-        
-        let cardGroup = $(UISelectors.cardGroup);
-
-        shows.showList.forEach(show => {
-            let card = $('<div class="col-4"></div>');
-            card.html(`
-                <div class="card" id="i${show.id}">
-                    <img class="card-img-top" src="${show.image}" alt="Card image cap" id="i${show.id}">
-                    <div class="card-body" id="i${show.id}">
-                        <p class="card-text" id="i${show.id}">${show.title}</p>
-                    </div>
-                </div>
-            `);
-            cardGroup.append(card);
-        })
-        
-        console.log($('.card')[0])
-
-    }
-    
-
-
-
-    const displaySingleInfo = (obj) => {
-
-        let wrapper = $('<div class="row"></div>');
-        wrapper.append(`<div class="col-7"><img id="big" src="${obj.image}></div>`);
-        wrapper.append(`<h3>Seasons (${obj.seasons.length})</h3>`);
-        let sUl = $('<ul></ul>');
-        obj.seasons.forEach(s => {
-            sUl.append(`<li>${s.getInfo()}</li>`)
+    const createMainEverything = (shows) => {
+        const page = $(UISelectors.cardGroup);
+        shows.forEach(show => {
+            let card = createCard(show.name, show.image, show.id);
+            page.append(card);
         });
-        wrapper.append(sUl);
-        wrapper.append('<h3>Cast</h3>')
-        let cUl = $('<ul></ul>');
-        obj.cast.forEach(c => {
-            cUl.append(`<li>${c.getInfo()}</li>`)
-        });
-        wrapper.append(cUl);
-        wrapper.append(`<h3>Summary</h3>${obj.details}`)
-
-        $('.container-fluid')[0].append(wrapper);
-
     }
 
-    const displayDropDown = (showList) => {
-        let ulDropDown = $(UISelectors.dropDown);
-        ulDropDown.empty();
-            showList.forEach((show, index) => {
-                let li = $(`
-                <li id="i${index}" class="drop-result" role="presentation">
-                    ${show.title}
-                </li>`);
-                ulDropDown.append(li);
-            })
-    }
-
-    
-
-    let liveSearch = () => {
-        let marker = '[]';
-        let data = [];
-
-        const liveDropdown = () => {/*  $.get(`http://api.tvmaze.com/search/shows?q=${checkSearch.val()}`)
-            .done(onSuccessSearchHandler)
-            .fail(onErrorSearchHandler); */
-    }
-        const onSuccessSearchHandler = (response) => {
-           if (response == marker) {
+    const createDropDown = (shows) => {
+        const ulDropDown = $(UISelectors.dropDown);
+        ulDropDown.css('display', 'none');
+        console.log(shows);
+        if (!shows.length){
                 return;
-            }
-            marker = response;
-            if (marker == '[]') {
-                toggleDropDown(UISelectors.dropDown, false)
-              
-            } else {
-                toggleDropDown(UISelectors.dropDown, true)
-            }
- 
-            data = liveDropdown.response;
-            let dropdownShows = dataModule.createShows(dropDownLimit);
-
-
-            
-
         }
+         ulDropDown.empty();
+        
+        console.log(ulDropDown);
+        shows.forEach( show => {
+            
+            let li = ( 
+            $(`<li role="presentation">
+                           <a role="menuitem" tabindex="-1" href="./single.html?id=${show.id}">${show.name}</a>
+                        </li>`));
+            ulDropDown.append(li);
+            
+        });
+        ulDropDown.css('display', 'block');
+
+    }
+    
+    const createFrame = (obj) => {
+        let main = ($(`
+        <div class="row">
+        <div class="col-md col-lg-7">
+            <img id="big" src="${obj.image}" alt="">
+        </div>
+        <div class="col-md col-lg-5">
+            <h1> ${obj.name} </h1>
+            <div class="akas"></div>
+            <h4>Seasons (${obj.seasons.length}):</h4>
+            <div class="seasons"></div>
+            <h4>Cast:</h4>
+            <div class="cast"></div>
+            <h4>Crew:</h4>
+            <div class="crew"></div>
+
+        </div>
+        <div class="col-12">
+            <h3>Summary</h3>
+            <p>${obj.info}</p>
+        </div>
+        <div class="col-12">
+            <h3>Episodes:</h3>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="ep1">
+ 
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="ep2">
+
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="ep3">
+
+            </div>
+        </div>
+
+        </div>
+
+        `))
+
+        return main;      
     }
 
-    
+    const ulDone = (arr) => {
+        const ul = $('<ul></ul>');  
+        arr.forEach(e =>{
+            ul.append(`<li>${e.getInfo()}</li>`)
+        })
+        return ul;
+    }
+
+    const createSingleShowPage = (obj) => {
+        const navbar = $(UISelectors.navbar);
+        navbar.after(createFrame(obj));
+        const akas = $(UISelectors.akas);
+        akas.append(ulDone(obj.akas));
+        const seasons = $(UISelectors.seasons);
+        seasons.append(ulDone(obj.seasons));
+        const cast = $(UISelectors.cast);
+        cast.append(ulDone(obj.cast));
+        const crew = $(UISelectors.crew);
+        crew.append(ulDone(obj.crew));
+        let arr1 = obj.episodes.slice(0, Math.floor(obj.episodes.length/3));
+        const ep1 = $(UISelectors.ep1);
+        ep1.append(ulDone(arr1))
+        let arr2 = obj.episodes.slice(Math.floor(obj.episodes.length/3), Math.floor(2*obj.episodes.length/3));
+        const ep2 = $(UISelectors.ep2);
+        ep2.append(ulDone(arr2))
+        let arr3 = obj.episodes.slice(Math.floor(2*obj.episodes.length/3));
+        const ep3 = $(UISelectors.ep3);
+        ep3.append(ulDone(arr3));
+    }
+
 
     return {
         UISelectors,
-        displaySingleInfo,
-        displayShows,
-        displayDropDown,
-        
-    }
-})()
+        createMainEverything,
+        createDropDown,
+        createSingleShowPage
+    };
+
+})();

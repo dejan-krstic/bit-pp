@@ -1,92 +1,75 @@
-let mainModule = ((UIModule, dataModule) => {
-    
+const mainModule = (() => {
+
+
     const initShows = () => {
         $.get('http://api.tvmaze.com/shows')
-        .done(onSuccessHandler)
-        .fail(onErrorHandler);
+            .done(onSuccessHandler)
+            .fail(onErrorHandler);
     }
-    
-
-    const onSuccessHandler = (response) => {
-        topShows(response)
+    const onErrorHandler = () => {
+        alert(UIModule.status.ERROR);
     }
 
-    const onErrorHandler = (error) => {
-        // UIModule.showError(error)
-    }
+    const onSuccessHandler = (response) => {        
+        let dataResponse = dataModule.adaptShowsResponse(response, 50);
+        UIModule.createMainEverything(dataResponse);
+   }
 
-    const initSingle = () => {
-        $.get(`http://api.tvmaze.com/shows/${localStorage.showID}?embed[]=seasons&embed[]=cast`)
-        .done(onSuccessSingleHandler)
-        .fail(onErrorSingleHandler)
-    }
-
-    const onSuccessSingleHandler = (response) => {
-        singleShow(response);
-    }
-
-    const onErrorSingleHandler = (error) => {
-        // UIModule.showError(error)
-    }
-
-    const topShows = (response) => {
-
-        const shows = dataModule.adaptResponse(response, 50)
-        let allShows = UIModule.displayShows(shows);
-        $(UIModule.UISelectors.card).hover(UIModule.toPointer);
-        $(UIModule.UISelectors.card).click(dataModule.clicked);
-        
-
-    };
-
-    const singleShow = (response) => {
-        const show = dataModule.adaptSingleResponse(response);
-        let singleShow = UIModule.displaySingleInfo(show);
-    }
-
-
-    // --------------------------------------------------------------
 
     const liveSearch = () => {
-        let checkSearch = $(UIModule.UISelectors.checkSearch);
-        console.log(checkSearch);
-        $.get(`http://api.tvmaze.com/search/shows?q=${checkSearch.val()}`)
+        let searchValue = $(UIModule.UISelectors.checkSearch);
+        $.get(`http://api.tvmaze.com/search/shows?q=${searchValue.val()}`)        
         .done(onSuccessSearchHandler)
-        .fail(onErrorSearchHandler);
+        .fail(onErrorSearchHandler);     
     }
 
-    const onSuccessSearchHandler = (response) => {
-
-        const results = dataModule.adaptResponse(response, 10);
-        let resultList = UIModule.displayDropDown(results);
-        $(UIModule.UISelectors.dropResult).hover(UIModule.toPointer);
-        $(UIModule.UISelectors.dropResult).click(dataModule.clicked);
+    const onErrorSearchHandler = () => {
+         alert(UIModule.status.ERROR);
     }
 
-    const onErrorSearchHandler = (error) => {
-        //UIModule.showError(error)
+    const onSuccessSearchHandler = ((response) => {
+        let marker = ''; 
+        return (response) => { 
+            if (JSON.stringify(response) != marker) {
+                const dataResponse = dataModule.adaptShowsResponse(response, 10);
+                UIModule.createDropDown(dataResponse);
+            }
+            marker = JSON.stringify(response);
+        }
+    })()
+        
+    // --------------- single page code part
+
+    const initSingle = () => {
+        $.get(`http://api.tvmaze.com/shows/${dataModule.fetchID()}?embed[]=seasons&embed[]=episodes&embed[]=cast&embed[]=crew&embed[]=akas`)
+        .done(onSuccessSingleHandler)
+        .fail(onErrorSingleHandler);
+    }
+    
+    const onSuccessSingleHandler = (response) => {
+        console.log(response);
+        const dataResponse = dataModule.adaptSingleResponse(response);        
+        console.log(dataResponse);
+        UIModule.createSingleShowPage(dataResponse);
+    }
+    
+    const onErrorSingleHandler = () => {
+        //todo
     }
 
-    $(UIModule.UISelectors.checkSearch).on('focus',() => {
-        console.log('1');
-        dataModule.interval.set(liveSearch)
-    })
 
-
-    $(UIModule.UISelectors.checkSearch).on('blur', dataModule.interval.clear)
-
-
-    //--------------------------------------------------------------------------------------------------------------
-
-
-
-    let getData = () => {
-        return data;
-    }
+    const setAndClear = (() => {
+        let interval;
+        $(UIModule.UISelectors.checkSearch)[0].addEventListener('focus', () => {
+            interval = setInterval(liveSearch, 1000);
+        })
+        $(UIModule.UISelectors.checkSearch)[0].addEventListener('blur', () => {
+            clearInterval(interval);
+        })
+    })()
 
     return {
         initShows,
         initSingle
-        
     }
-})(UIModule, dataModule)
+})(dataModule);
