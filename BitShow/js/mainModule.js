@@ -54,7 +54,7 @@ const mainModule = (() => {
     }
     
     const onErrorSingleHandler = () => {
-        //todo
+        alert(UIModule.status.ERROR);
     }
 
 
@@ -72,4 +72,4 @@ const mainModule = (() => {
         initShows,
         initSingle
     }
-})(dataModule);
+})();
